@@ -18,6 +18,11 @@ namespace IntegerArrayGrouper.Controllers
         [HttpPost]
         public ActionResult Index(ViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var helper = new IntegerArrayHelper();
 
             if(!helper.Validate(model.Input))
