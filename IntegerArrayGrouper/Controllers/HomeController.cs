@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IntegerArrayGrouper.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,23 +9,29 @@ namespace IntegerArrayGrouper.Controllers
 {
     public class HomeController : Controller
     {
+        [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            return View(new ViewModel());
         }
 
-        public ActionResult About()
+        [HttpPost]
+        public ActionResult Index(ViewModel model)
         {
-            ViewBag.Message = "Your application description page.";
+            var helper = new IntegerArrayHelper();
 
-            return View();
-        }
+            if(!helper.Validate(model.Input))
+            {
+                model.IsError = true;
+                model.Output = "Invalid input format.";
+                return View(model);
+            }
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
+            var input = helper.Parse(model.Input);
+            var output = input.GroupBy(x => x).Where(g => g.Count() >= 3).Select(x => x.Key).OrderByDescending(x => x);
+            model.Output = helper.Format(output);
 
-            return View();
+            return View(model);
         }
     }
 }
